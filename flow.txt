@@ -1,0 +1,13 @@
+1. make 3x3 grid
+2. button will be replaced with the empth spot
+    2.1 Once a player clicks a button, the button is supposed to be deactive
+    2.2 Once a button is clicked, the display will show O, X alternately
+3. Once 9 spots are filled up, game will be finished
+
+-Need to know
+1. How to make a rectangular grid
+2. How to add a click button on the grid
+3. How to deactivate the button once clicked
+
+-Code
+1. Make 3x3 grid
