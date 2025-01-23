@@ -1,30 +1,62 @@
 import dash
-from dash import html
+from dash import html, Input, Output, State, ctx
 import dash_bootstrap_components as dbc
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-def make_button():
-    new_button = dbc.Col(html.Div(html.Button(".")), width=1)
-    return new_button
+def make_button(button_id):
+    return dbc.Col(
+        html.Button(
+            " ",
+            id=button_id,  # Unique ID for each button
+            n_clicks=0,  # Tracks the number of clicks
+            style={
+                "font-size": "24px", 
+                "width": "60px", 
+                "height": "60px", 
+                "text-align": "center"
+            }
+        ), 
+        width=1
+    )
 
 app.layout = dbc.Container([
     dbc.Row([
-        make_button(),
-        make_button(),
-        make_button()
+        make_button("bnt-1"), # each bnt-(n) = id
+        make_button("bnt-2"),
+        make_button("bnt-3")
     ]),
     dbc.Row([
-        make_button(),
-        make_button(),
-        make_button()
+        make_button("bnt-4"),
+        make_button("bnt-5"),
+        make_button("bnt-6")
     ]),
     dbc.Row([
-        make_button(),
-        make_button(),
-        make_button()
+        make_button("bnt-7"),
+        make_button("bnt-8"),
+        make_button("bnt-9")
     ])
 ])
+
+# Callback to toggle button text between "X" and "O" - Got this from Chatgpt (Frontend)
+@app.callback(
+    [Output(f"bnt-{i}", "children") for i in range(1, 10)],
+    [Output('click-count', 'children')],
+    [Input('button', 'n_clicks')],
+    [Input(f"bnt-{i}", "n_clicks") for i in range(1, 10)],
+    prevent_initial_call=True
+)
+
+def update_order(n_clicks):
+    if n_clicks is 2 & n_clicks == 1:
+        return "Turn - User 1"
+    else:
+        return "Turn - User 2"
+
+def update_buttons(n_clicks):
+    # Determine the button clicked
+    button_states = [("X" if n % 2 == 1 else "O") if n else " " for n in n_clicks]
+    return button_states
 
 if __name__ == "__main__":
     app.run_server(debug=True)
