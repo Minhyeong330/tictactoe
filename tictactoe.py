@@ -1,8 +1,9 @@
 import dash
 from dash import html, Input, Output, State, ctx
 import dash_bootstrap_components as dbc
+from pynput import mouse
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 def make_button(button_id):
     return dbc.Col(
@@ -41,22 +42,16 @@ app.layout = dbc.Container([
 # Callback to toggle button text between "X" and "O" - Got this from Chatgpt (Frontend)
 @app.callback(
     [Output(f"bnt-{i}", "children") for i in range(1, 10)],
-    [Output('click-count', 'children')],
-    [Input('button', 'n_clicks')],
     [Input(f"bnt-{i}", "n_clicks") for i in range(1, 10)],
     prevent_initial_call=True
 )
-
-def update_order(n_clicks):
-    if n_clicks is 2 & n_clicks == 1:
-        return "Turn - User 1"
-    else:
-        return "Turn - User 2"
-
-def update_buttons(n_clicks):
+def update_buttons(*n_clicks):
     # Determine the button clicked
     button_states = [("X" if n % 2 == 1 else "O") if n else " " for n in n_clicks]
+    if "bnt-1" == 'O' and "bnt-2" == 'O' and "bnt-3" == 'O':
+        button_states = " "
     return button_states
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
