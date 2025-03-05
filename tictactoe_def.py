@@ -2,7 +2,6 @@ import dash
 from dash import html, Input, Output, State, ctx
 import dash_bootstrap_components as dbc
 from pynput import mouse
-from tictactoe_def import *
 
 def mouse_click(button, pressed):
     if pressed:
