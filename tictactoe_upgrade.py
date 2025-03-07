@@ -10,26 +10,26 @@ board = [None] * 9
 current_player = "O"
 
 # Define the layout
-app.layout = html.Div([
-    html.H2("Tic-Tac-Toe"),
-    html.Div(
+app.layout = html.Div([              #Define Division
+    html.H1("Tic-Tac-Toe Game Board"),  #H1 - Headline 1 = The order of headline
+    html.Div(               #This division is for button
         [
-            html.Button(
-                " ",
-                id=f"cell-{i}",
-                n_clicks=0,
-                style={
+            html.Button(        #For button
+                " ",            #Default value of the button
+                id=f"cell-{i}", #Assign Button id
+                n_clicks=0,     #The # of clicks
+                style={         #Define the style of the board - Location of the button
                     "width": "80px",
                     "height": "80px",
                     "font-size": "24px",
                     "margin": "5px"
                 }
             )
-            for i in range(9)
+            for i in range(9) #Array[0~8] because I need 9 buttons on the board
         ],
-        style={"display": "grid", "grid-template-columns": "repeat(3, 1fr)"}
+        style={"display": "grid", "grid-template-columns": "repeat(3, 1fr)"} # Button Style - CSS Styling dictionary / # grid-template-columns : repeat(3, 1fr) => 1fr(hard to understand) = 1 fraction of the available space, making all colums equal in width
     ),
-    html.H3(id="winner-text", children="Player O's Turn"),  # Display game status
+    html.H2(id="winner-text", children="Player O's Turn"),  # Display game status - Headline 2
     html.Button("Reset", id="reset-btn", n_clicks=0, style={"margin-top": "10px"}),
     dcc.Store(id="board-store", data=board),  # Store board state
     dcc.Store(id="player-store", data=current_player),  # Store current player
@@ -45,7 +45,7 @@ def check_winner(board):
     for a, b, c in win_conditions:
         if board[a] and board[a] == board[b] == board[c]:
             return board[a]  # Return winner ("O" or "X")
-    if None not in board:
+    if None not in board: # the board is full = None not in board, but there is no winner
         return "Tie"  # If the board is full and no winner, it's a tie
     return None  # No winner yet
 
@@ -54,26 +54,22 @@ def check_winner(board):
     Output("board-store", "data"),
     Output("player-store", "data"),
     Output("winner-text", "children"),
-    Output("cell-0", "children"), Output("cell-1", "children"), Output("cell-2", "children"),
-    Output("cell-3", "children"), Output("cell-4", "children"), Output("cell-5", "children"),
-    Output("cell-6", "children"), Output("cell-7", "children"), Output("cell-8", "children"),
-    Input("cell-0", "n_clicks"), Input("cell-1", "n_clicks"), Input("cell-2", "n_clicks"),
-    Input("cell-3", "n_clicks"), Input("cell-4", "n_clicks"), Input("cell-5", "n_clicks"),
-    Input("cell-6", "n_clicks"), Input("cell-7", "n_clicks"), Input("cell-8", "n_clicks"),
-    Input("reset-btn", "n_clicks"),  # Reset button input
-    State("board-store", "data"),
-    State("player-store", "data"),
+    [Output(f"cell-{i}", "children") for i in range(9)], # list comprehension - make better readability
+    [Input(f"cell-{i}", "n_clicks") for i in range(9)], # list comprehension -> args[0~8]
+    Input("reset-btn", "n_clicks"),  # Reset button input -> args[9] = args[-3]
+    State("board-store", "data"), # -> args[10] = args[-2]
+    State("player-store", "data"), # -> args[11] = args[-1]
     prevent_initial_call=True
 )
-def update_board(*args):
+def update_board(*args): # args
     board = args[-2]  # Retrieve current board state
     current_player = args[-1]  # Retrieve current player
     reset_clicks = args[-3]  # Reset button clicks
     triggered_id = ctx.triggered_id  # Get which button was clicked
 
     # Reset game when reset button is clicked
-    if "reset-btn" in triggered_id:
-        return [None] * 9, "O", "Player O's Turn", *[" "] * 9
+    if "reset-btn" in triggered_id: # stores the ID of the component that triggered the callback
+        return [None] * 9, "O", "Player O's Turn", *[" "] * 9 # Resets the board (9 empty spaces) "O" = Sets player O as the next turn
 
     # Identify clicked cell
     cell_index = int(triggered_id.split("-")[1])

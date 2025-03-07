@@ -48,8 +48,6 @@ app.layout = dbc.Container([
 def update_buttons(*n_clicks):
     # Determine the button clicked
     button_states = [("X" if n % 2 == 1 else "O") if n else " " for n in n_clicks]
-    if "bnt-1" == 'O' and "bnt-2" == 'O' and "bnt-3" == 'O':
-        button_states = " "
     return button_states
 
 
