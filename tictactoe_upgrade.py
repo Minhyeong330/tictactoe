@@ -51,10 +51,10 @@ def check_winner(board):
 
 # Callback to handle player moves
 @app.callback(
-    Output("board-store", "data"),
-    Output("player-store", "data"),
-    Output("winner-text", "children"),
-    [Output(f"cell-{i}", "children") for i in range(9)], # list comprehension - make better readability
+    Output("board-store", "data"), # 1st return value - [None]*9
+    Output("player-store", "data"), # 2nd retrun value - Current player
+    Output("winner-text", "children"), # 3rd retrun value - Headline2
+    [Output(f"cell-{i}", "children") for i in range(9)], # list comprehension - make better readability : 4th retrun value *[" "]*9
     [Input(f"cell-{i}", "n_clicks") for i in range(9)], # list comprehension -> args[0~8]
     Input("reset-btn", "n_clicks"),  # Reset button input -> args[9] = args[-3]
     State("board-store", "data"), # -> args[10] = args[-2]
@@ -69,27 +69,45 @@ def update_board(*args): # args
 
     # Reset game when reset button is clicked
     if "reset-btn" in triggered_id: # stores the ID of the component that triggered the callback
-        return [None] * 9, "O", "Player O's Turn", *[" "] * 9 # Resets the board (9 empty spaces) "O" = Sets player O as the next turn
+        return [None] * 9, "O", "Player O's Turn", *[" "] * 9 
+        # 1. Resets the board (9 empty spaces) 
+        # 2. "O" = Sets player O as the next turn - Current player
+        # 3. Winner-text
+        # 4. Output[(f"cell-{i}) for i in range(9)]
+        # This return statu is supposed to be match the order of output components - related to @callback
 
     # Identify clicked cell
-    cell_index = int(triggered_id.split("-")[1])
+    cell_index = int(triggered_id.split("-")[1]) # How to use split
+    # 1. triggered_id = ID of the components that triggered the callback [cell-0, cell-1, cell-2, ...]
+    # 2. split("-") retunrs cell-0 => ["cell", "0"] *The type of retrun values are str
+    # 3. triggered_id.split("-")[1] => [1] means extracting [1] from ["cell" ,"0"] => "cell" = [0]
+    # 4. int(...) => want to make str to int
+    # 5. finally, return value will be 0, 1, 2, 3, ... (int type) -> because cell's ID into an index(0-8) --> 0-8 is int
+
     
     # If cell is already filled, ignore the click
     if board[cell_index] is not None:
-        return board, current_player, f"Player {current_player}'s Turn", *[x if x else " " for x in board]
+        return board, current_player, f"Player {current_player}'s Turn", *[x if x else " " for x in board] # list comprehension with a conditional expression
+    # 1. board[cell_index] is not None => if the board[id#] is already filled
+    # 2. return board -> the first output from @callback
+    # 3. current_player -> the second output from @callback
+    # 4. f"player {current_player}'s Turn -> 3rd output from @callback [The Headline2]
+    # 5. *[x if x else " " for x in board] => x will be "O" or "X" -> loop x if "O" or "X", else " " - Complicated
 
     # Update the board with the current player's move
     board[cell_index] = current_player
+    # board has [0~8]. So, if board[1] = "O", then the current player "O"
 
     # Check if there is a winner
     winner = check_winner(board)
     if winner:
         if winner == "Tie":
-            return [None] * 9, "O", "It's a Tie! Resetting board...", *[" "] * 9
+            return [None] * 9, "O", "It's a Tie! Resetting board", *[" "] * 9
+            # Retrun values in the order of the outputs [Board(array), Current player, Headline2, Board Cell-ID]
         return [None] * 9, "O", f"Player {winner} Wins! Resetting board...", *[" "] * 9
 
     # Switch players
-    next_player = "X" if current_player == "O" else "O"
+    next_player = ["X" if current_player == "O" else "O"]
 
     return board, next_player, f"Player {next_player}'s Turn", *[x if x else " " for x in board]
 
